@@ -1,4 +1,4 @@
-service: serverless-example
+service: nestjs-service
 
 plugins:
   - serverless-offline
@@ -6,6 +6,12 @@ plugins:
 provider:
   name: aws
   runtime: nodejs14.x
+  environment:
+    DB_HOST: aws-practitioner-js-6-instance.crwsouycadb5.us-east-1.rds.amazonaws.com
+    DB_PORT: 5432
+    DB_NAME: aws_practitioner_js_6
+    DB_USER: postgres
+    DB_PASSWORD: lNQ97lG6wlmBQhYT2x8j
 
 functions:
   main:
