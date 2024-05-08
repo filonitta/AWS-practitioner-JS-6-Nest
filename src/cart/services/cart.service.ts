@@ -11,25 +11,34 @@ export class CartService {
 
   async findByUserId(userId: string): Promise<Cart> {
     const queryResult = await this.client.query(
-      'SELECT * FROM cart_items WHERE cart_id = (SELECT id FROM carts WHERE user_id = $1)',
+      `SELECT carts.id,
+        COALESCE(ARRAY_AGG(json_build_object('product_id', cart_items.product_id, 'count', cart_items.count)) FILTER (WHERE cart_items.cart_id IS NOT NULL), ARRAY[]::json[]) AS items
+        FROM carts
+        LEFT JOIN cart_items ON carts.id = cart_items.cart_id
+        WHERE carts.user_id = $1
+        GROUP BY carts.id;`,
       [userId],
     );
 
-    return queryResult.rows[0]; // Assuming each user could only have one cart
+    return queryResult.rows[0];
   }
 
   async createByUserId(userId: string): Promise<Cart> {
     const id = v4();
+    const date = new Date();
+
     await this.client.query(
-      `INSERT INTO carts (id, user_id, items) VALUES ($1, $2, ARRAY[]::uuid[]);`,
-      [id, userId],
+      `INSERT INTO carts (id, user_id, created_at, updated_at, status) VALUES ($1, $2, $3, $4, $5);`,
+      [id, userId, date.toISOString(), date.toISOString(), 'OPEN'],
     );
-    return this.findByUserId(userId);
+
+    return await this.findByUserId(userId);
   }
 
   async findOrCreateByUserId(userId: string): Promise<Cart> {
     const cart = await this.findByUserId(userId);
 
+    console.log('cart', cart);
     if (!cart) {
       return await this.createByUserId(userId);
     }

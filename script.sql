@@ -29,6 +29,8 @@ CREATE TABLE cart_items (
 
 INSERT INTO cart_items (cart_id, product_id, count) VALUES
 ('5706eac2-fc97-4a6f-8c25-8c99c5e0f205', uuid_generate_v4(), 100),
+('5706eac2-fc97-4a6f-8c25-8c99c5e0f205', uuid_generate_v4(), 101),
+('5706eac2-fc97-4a6f-8c25-8c99c5e0f205', uuid_generate_v4(), 102),
 ('1240ef0c-bfdd-49ce-9f09-f70772c76a21', uuid_generate_v4(), 200);
 
 
