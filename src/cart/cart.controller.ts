@@ -43,7 +43,6 @@ export class CartController {
   // @UseGuards(BasicAuthGuard)
   @Put()
   async updateUserCart(@Req() req: AppRequest, @Body() body) {
-    // TODO: validate body payload...
     const cart = await this.cartService.updateByUserId(
       getUserIdFromRequest(req),
       body,
@@ -54,7 +53,6 @@ export class CartController {
       message: 'OK',
       data: {
         cart,
-        total: calculateCartTotal(cart),
       },
     };
   }
@@ -89,13 +87,13 @@ export class CartController {
     }
 
     const { id: cartId, items } = cart;
-    const total = calculateCartTotal(cart);
+    // const total = calculateCartTotal(cart);
     const order = await this.orderService.create({
       ...body, // TODO: validate and pick only necessary data
       userId,
       cartId,
       items,
-      total,
+      // total,
     });
     this.cartService.removeByUserId(userId);
 

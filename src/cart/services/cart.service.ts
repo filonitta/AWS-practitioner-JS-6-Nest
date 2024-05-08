@@ -37,11 +37,33 @@ export class CartService {
     return cart;
   }
 
-  async updateByUserId(userId: string, { items }: Cart): Promise<Cart> {
-    await this.client.query('UPDATE carts SET items = $1 WHERE user_id = $2', [
-      items,
-      userId,
-    ]);
+  async updateByUserId(
+    userId: string,
+    cartItem: { product_id: string; count: number },
+  ): Promise<Cart> {
+    await this.client.query('BEGIN');
+
+    const res = await this.client.query(
+      'SELECT id FROM carts WHERE user_id = $1',
+      [userId],
+    );
+
+    if (res.rows.length > 0) {
+      const cartId = res.rows[0].id;
+
+      const { product_id, count } = cartItem;
+
+      await this.client.query(
+        'UPDATE cart_items SET product_id = $1, count = $2 WHERE cart_id = $3',
+        [product_id, count, cartId],
+      );
+
+      // Commit transaction
+      await this.client.query('COMMIT');
+    } else {
+      await this.client.query('ROLLBACK');
+      throw new Error('Invalid user_id');
+    }
 
     return this.findByUserId(userId);
   }
