@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { v4 } from 'uuid';
 
@@ -7,25 +7,14 @@ import { Cart } from '../models';
 
 @Injectable()
 export class CartService {
-  private client: Client;
-
-  constructor() {
-    this.client = new Client({
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT),
-      database: process.env.DB_NAME,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-    });
-
-    this.client.connect();
-  }
+  constructor(@Inject('DATABASE_CONNECTION') private client: Client) {}
 
   async findByUserId(userId: string): Promise<Cart> {
     const queryResult = await this.client.query(
-      'SELECT * FROM carts WHERE user_id = $1',
+      'SELECT * FROM cart_items WHERE cart_id = (SELECT id FROM carts WHERE user_id = $1)',
       [userId],
     );
+
     return queryResult.rows[0]; // Assuming each user could only have one cart
   }
 
