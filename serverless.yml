@@ -2,6 +2,7 @@ service: nestjs-service
 
 plugins:
   - serverless-offline
+  - serverless-dotenv-plugin
 
 provider:
   name: aws
@@ -15,12 +16,6 @@ provider:
      - subnet-5387291f
      - subnet-55aaa33d
      - subnet-ed276197
-  environment:
-    DB_HOST: aws-practitioner-js-6-instance.cb4qkmwcu3qa.us-east-2.rds.amazonaws.com
-    DB_PORT: 5432
-    DB_NAME: aws_practitioner_js_6
-    DB_USER: postgres
-    DB_PASSWORD: uGxGSCHwfU75a8HoT1de
 
 functions:
   main:
