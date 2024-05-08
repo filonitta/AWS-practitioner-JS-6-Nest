@@ -12,11 +12,10 @@ export const DatabaseProviders: Provider[] = [
           database: process.env.DB_NAME,
           user: process.env.DB_USER,
           password: process.env.DB_PASSWORD,
-          // ssl: {
-          //   rejectUnauthorized: false,
-          // },
-          // ssl: true,
-          // connectionTimeoutMillis: 5000,
+          ssl: {
+            rejectUnauthorized: false,
+          },
+          connectionTimeoutMillis: 5000,
         });
 
         await client.connect();
